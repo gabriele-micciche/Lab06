@@ -36,6 +36,32 @@ class DepositoStrumenti:
             :return: una lista con tutti gli strumenti presenti oppure None
         """
         # TODO
+        try:
+            cnx = get_connection()
+
+            strumenti = []
+            cursore = cnx.cursor(dictionary=True)
+
+            query = """ SELECT *
+                         FROM strumento"""
+            cursore.execute(query)
+
+            for riga in cursore.fetchall():
+                strumento = Strumento(riga['codice'],
+                                      riga['tipo'],
+                                      riga['marca'],
+                                      riga['anno_acquisto'],
+                                      riga['valore'],
+                                      riga['disponibile'])
+                strumenti.append(strumento)
+            return strumenti
+        except Exception as e:
+            print(f"{e}")
+            return None
+        finally:
+            if cnx and cnx.is_connected():
+                cnx.close()
+
 
     def cerca_strumenti_per_tipo(self, tipo) -> list[Strumento] | None:
         """
@@ -44,3 +70,29 @@ class DepositoStrumenti:
             :return: una lista con tutti gli strumenti del tipo indicato oppure None
         """
         # TODO
+        try:
+            cnx = get_connection()
+
+            strumenti = []
+            cursore = cnx.cursor(dictionary=True)
+
+            query = """ SELECT *
+                         FROM strumento
+                         WHERE tipo = %s"""
+            cursore.execute(query, (tipo,))
+
+            for riga in cursore.fetchall():
+                strumento = Strumento(riga['codice'],
+                                      riga['tipo'],
+                                      riga['marca'],
+                                      riga['anno_acquisto'],
+                                      riga['valore'],
+                                      riga['disponibile'])
+                strumenti.append(strumento)
+            return strumenti
+        except Exception as e:
+            print(f"{e}")
+            return None
+        finally:
+            if cnx and cnx.is_connected():
+                cnx.close()
